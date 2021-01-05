@@ -1,4 +1,6 @@
-FROM buildkite/agent
-FROM node:latest
-RUN npm install
+version: '3'
+
+services:
+  app:
+    build: .
 
