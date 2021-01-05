@@ -1,0 +1,16 @@
+version: '2.1'
+
+services:
+  frontend:
+    build: .
+    environment:
+      - EMOJI_HOST
+      - BUILDKITE
+      - BUILDKITE_COMMIT
+      - BUILDKITE_ORGANIZATION_SLUG
+      - BUILDKITE_PIPELINE_SLUG
+      - CI
+    volumes:
+      - "./bundle-analysis:/frontend/bundle-analysis"
+      - "./coverage:/frontend/coverage"
+      - "./dist:/host/dist"
