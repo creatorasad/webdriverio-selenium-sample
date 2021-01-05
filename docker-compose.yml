@@ -1,89 +1,15 @@
-version: '3.6'
-services:
-  ci:
-    build:
-      dockerfile: dockerfiles/Dockerfile.ci
-      context: .
-      target: ci
+FROM node:latest
 
-  cli:
-    build:
-      dockerfile: dockerfiles/Dockerfile.ci
-      context: .
-      target: cli
+RUN mkdir /app
+WORKDIR /app
 
-  docs:
-    build:
-      dockerfile: dockerfiles/Dockerfile.docs
-      context: .
-      args:
-        DOCS_PUSH_TOKEN:
+ENV PATH /app/node_modules/.bin:$PATH
 
-  browserstack-app-automate:
-    build:
-      context: test/fixtures/browserstack-app
-      args:
-        BRANCH_NAME:
-    environment:
-      BRANCH_NAME:
-      BUILDKITE_PIPELINE_NAME:
-      BUILDKITE_RETRY_COUNT:
-      BUILDKITE:
-      BUILDKITE_BUILD_NUMBER:
-      BUILDKITE_STEP_KEY:
+COPY package.json package-lock.json /app/
+RUN npm install
 
-  cli-tests:
-    build:
-      context: test/fixtures/cli
-      args:
-        BRANCH_NAME:
+# Or if you're using Yarn
+# ADD package.json yarn.lock /app/
+# RUN yarn install
 
-  comparison-tests:
-    build:
-      context: test/fixtures/comparison
-      args:
-        BRANCH_NAME:
-
-  framework-tests:
-    build:
-      context: test/fixtures/framework
-      args:
-        BRANCH_NAME:
-
-  docker-tests:
-    build:
-      context: test/fixtures/docker-app
-      args:
-        BRANCH_NAME:
-    environment:
-      NETWORK_NAME: "${BUILDKITE_JOB_ID:-core-maze-runner}"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-
-  proxy-tests:
-    build:
-      context: test/fixtures/proxy
-      args:
-        BRANCH_NAME:
-
-  payload-helper-tests:
-    build:
-      context: test/fixtures/payload-helpers
-      args:
-        BRANCH_NAME:
-
-  http-response-tests:
-    build:
-      context: test/fixtures/http-response
-      args:
-        BRANCH_NAME:
-
-  unit-test:
-    build:
-      dockerfile: dockerfiles/Dockerfile.ci
-      context: .
-      target: unit-test
-
-networks:
-  default:
-    name: ${BUILDKITE_JOB_ID:-core-maze-runner}
+COPY . /app/
